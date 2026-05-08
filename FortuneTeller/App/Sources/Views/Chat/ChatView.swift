@@ -15,10 +15,10 @@ private func buildChatQuestion(_ question: String, language: String, profile: Pr
 
     let birthContext = language == "vi"
         ? """
-        [Thông tin của tôi: Hôm nay là \(todayStr). Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(placeStr).]
+        [Thông tin của tôi: Tên là \(profile.name). Hôm nay là \(todayStr). Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(placeStr), giới tính: \(profile.gender ?? "không rõ").]
         """
         : """
-        [My info: Today is \(todayStr). I was born on \(birthStr) at \(timeStr), birthplace: \(placeStr).]
+        [My info: Name is \(profile.name). Today is \(todayStr). I was born on \(birthStr) at \(timeStr), birthplace: \(placeStr), gender: \(profile.gender ?? "unknown").]
         """
 
     let noChinese = language == "vi"

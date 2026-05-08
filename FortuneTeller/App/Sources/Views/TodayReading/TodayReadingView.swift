@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Markdown-rendered text view
 
-private struct MarkdownText: View {
+struct MarkdownText: View {
     let markdown: String
     var body: some View {
         if let attr = try? AttributedString(
@@ -28,6 +28,7 @@ struct TodayReadingView: View {
     @State private var sources: [FortuneAPI.AskResponse.SourceInfo] = []
     @State private var isLoading = false
     @State private var error: String?
+    @State private var showLifeReading = false
 
     private var todayKey: String {
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
@@ -76,6 +77,19 @@ struct TodayReadingView: View {
                         .font(theme.labelFont(size: 14))
                         .foregroundColor(theme.mutedStarlight)
                         .frame(maxWidth: .infinity)
+
+                        // Life Reading button
+                        Button {
+                            showLifeReading = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "sparkle.magnifyingglass")
+                                Text(lang == "vi" ? "Xem lá số trọn đời" : "View Life Reading")
+                            }
+                            .font(theme.labelFont(size: 14))
+                            .foregroundColor(theme.amber)
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(20)
@@ -88,6 +102,9 @@ struct TodayReadingView: View {
                 if answer.isEmpty, error == nil, settings.activeProfile != nil {
                     Task { await fetchReading() }
                 }
+            }
+            .sheet(isPresented: $showLifeReading) {
+                LifeReadingView()
             }
         }
     }
@@ -120,6 +137,18 @@ struct TodayReadingView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(theme.gold)
+
+            // Life Reading link
+            Button {
+                showLifeReading = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkle.magnifyingglass")
+                    Text(lang == "vi" ? "Xem lá số trọn đời" : "View Life Reading")
+                }
+                .font(theme.bodyFont(size: 14))
+                .foregroundColor(theme.amber)
+            }
 
             Spacer().frame(height: 40)
         }
@@ -305,8 +334,9 @@ struct TodayReadingView: View {
 
         if lang == "vi" {
             return """
+            Tên: \(profile.name)
             Hôm nay là \(todayStr).
-            Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(profile.birthPlace ?? "không rõ").
+            Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(profile.birthPlace ?? "không rõ"), giới tính: \(profile.gender ?? "không rõ").
 
             Đọc tử vi chi tiết cho tôi ngày hôm nay. Trả lời bằng markdown có tiêu đề rõ ràng. Bao gồm TẤT CẢ các mục sau (nếu một truyền thống không có thông tin, hãy thử truyền thống khác):
 
@@ -342,8 +372,9 @@ struct TodayReadingView: View {
         }
 
         return """
+        Name: \(profile.name)
         Today is \(todayStr).
-        I was born on \(birthStr) at \(timeStr), birthplace: \(profile.birthPlace ?? "unknown").
+        I was born on \(birthStr) at \(timeStr), birthplace: \(profile.birthPlace ?? "unknown"), gender: \(profile.gender ?? "unknown").
 
         Give me a detailed fortune reading for TODAY ONLY. Format your response using markdown headings. Include ALL of the following sections (if one tradition lacks information, try another):
 

@@ -270,8 +270,8 @@ struct ShadowReadingView: View {
 
         do {
             let prompt = settings.language == "vi"
-                ? "Hãy tiết lộ một điều tôi đang tránh né hôm nay. Chỉ một đoạn ngắn, đầy suy ngẫm và nhẹ nhàng. Liệt kê 3 chủ đề (từ đơn) như 'Kiên nhẫn, Tự chăm sóc, Trung thực'. KHÔNG dùng chữ Hán. Chỉ viết bằng tiếng Việt."
-                : "Reveal something I may be avoiding today. Keep it short, introspective, and gentle. Include 3 single-word themes like 'Patience, Self-care, Honesty.' Do NOT include Chinese characters. Write only in English."
+                ? "Tên tôi là \(profile.name), sinh ngày \(profile.birthDateString) lúc \(String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)) tại \(profile.birthPlace ?? "không rõ"), giới tính \(profile.gender ?? "không rõ"). Hãy tiết lộ một điều tôi đang tránh né hôm nay. Chỉ một đoạn ngắn, đầy suy ngẫm và nhẹ nhàng. Liệt kê 3 chủ đề (từ đơn) như 'Kiên nhẫn, Tự chăm sóc, Trung thực'. KHÔNG dùng chữ Hán. Chỉ viết bằng tiếng Việt."
+                : "My name is \(profile.name), born \(profile.birthDateString) at \(String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)) in \(profile.birthPlace ?? "unknown"), gender \(profile.gender ?? "unknown"). Reveal something I may be avoiding today. Keep it short, introspective, and gentle. Include 3 single-word themes like 'Patience, Self-care, Honesty.' Do NOT include Chinese characters. Write only in English."
 
             let resp = try await api.ask(
                 question: prompt,

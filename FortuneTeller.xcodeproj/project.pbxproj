@@ -10,6 +10,7 @@
 		120E24FE15326C2F5524116D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A330AAF615E37CBE9910BF84 /* SettingsView.swift */; };
 		142071BEA4B29FF4546C661A /* TodayReadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489DAB45F39CDCF1561C1B /* TodayReadingView.swift */; };
 		20C1EAC36CFD174C8FBC6D33 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E4F339AC6BCE92E3BBE55F /* ChatMessage.swift */; };
+		259D5E7E10A7F4C20B4584B4 /* LifeReadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ABE17FC28974A5E456CF62B /* LifeReadingView.swift */; };
 		2F8DECC426D9FC4474781698 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B2B1F14CFBD2834D4B7AEA /* AppSettings.swift */; };
 		310C45D2B6152C9E1F8DF3F4 /* FortuneGardenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E68ED419BD1A3E7F48141 /* FortuneGardenView.swift */; };
 		590292C401CCE81FE8DF2473 /* CookieFortune.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FC60C946455251BA9D2185 /* CookieFortune.swift */; };
@@ -34,6 +35,7 @@
 		22E4F339AC6BCE92E3BBE55F /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		36416AF5D8450F21E4488FD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3ECE36A3E6602884FE5875AA /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		6ABE17FC28974A5E456CF62B /* LifeReadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeReadingView.swift; sourceTree = "<group>"; };
 		78FA66B67388C7C677CAC00D /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		877CCCA172553E32A0FE80B0 /* FortuneAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneAPI.swift; sourceTree = "<group>"; };
 		87B0283BBB0E693FF72DFC7A /* AppVisualTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVisualTheme.swift; sourceTree = "<group>"; };
@@ -53,6 +55,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1F6E0ACC0F72A6F2108B3F11 /* LifeReading */ = {
+			isa = PBXGroup;
+			children = (
+				6ABE17FC28974A5E456CF62B /* LifeReadingView.swift */,
+			);
+			path = LifeReading;
+			sourceTree = "<group>";
+		};
 		298BB06309026E063BA4DEA6 /* ShadowReading */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +155,7 @@
 				7834F7A80A898B76EE09043F /* Chat */,
 				BEDFB96611267FEF541FCB5A /* CookieFortune */,
 				30F22C608533AF29AF1D1430 /* FortuneGarden */,
+				1F6E0ACC0F72A6F2108B3F11 /* LifeReading */,
 				853B76077CFFB40410FB10AB /* Profile */,
 				9CF68F35FE6A9E38FEF78E91 /* Settings */,
 				298BB06309026E063BA4DEA6 /* ShadowReading */,
@@ -289,6 +300,7 @@
 				B2C82481C150FAC5BBE39705 /* FortuneAPI.swift in Sources */,
 				310C45D2B6152C9E1F8DF3F4 /* FortuneGardenView.swift in Sources */,
 				DC833752D63EB0E3ADCE0DCF /* FortuneTellerApp.swift in Sources */,
+				259D5E7E10A7F4C20B4584B4 /* LifeReadingView.swift in Sources */,
 				B0409B46B6D7C921F297422C /* LocalizationHelper.swift in Sources */,
 				E46CF763B649587BBB468751 /* PlacePickerView.swift in Sources */,
 				C0B79E28A6658D36609C2D83 /* Profile.swift in Sources */,
