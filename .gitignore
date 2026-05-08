@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# ChromaDB
+server/chroma_db/
+
+# Manifest (rebuild on deploy)
+server/knowledge_manifest.json
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ollama models (large)
+*.gguf
+
+# Logs
+*.log
