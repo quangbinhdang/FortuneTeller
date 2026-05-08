@@ -1,13 +1,31 @@
 import SwiftUI
 
-// MARK: - No-Chinese guard
+// MARK: - Chat question builder
 
-/// Appends a language-specific instruction to avoid Chinese characters.
-private func guardNoChinese(_ question: String, language: String) -> String {
-    let guardLine = language == "vi"
+/// Injects birth details into the user's question so the LLM has them directly.
+private func buildChatQuestion(_ question: String, language: String, profile: Profile) -> String {
+    let todayStr: String = {
+        let df = DateFormatter()
+        df.dateFormat = language == "vi" ? "'ngày' dd/MM/yyyy" : "MMMM d, yyyy"
+        return df.string(from: Date())
+    }()
+    let birthStr = profile.birthDateString // YYYY-MM-DD from Profile
+    let timeStr = String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)
+    let placeStr = profile.birthPlace ?? (language == "vi" ? "không rõ" : "unknown")
+
+    let birthContext = language == "vi"
+        ? """
+        [Thông tin của tôi: Hôm nay là \(todayStr). Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(placeStr).]
+        """
+        : """
+        [My info: Today is \(todayStr). I was born on \(birthStr) at \(timeStr), birthplace: \(placeStr).]
+        """
+
+    let noChinese = language == "vi"
         ? "\n\n(KHÔNG dùng chữ Hán hoặc ký tự Trung Quốc. Chỉ viết bằng tiếng Việt.)"
         : "\n\n(Do NOT include Chinese characters or Hanzi. Write only in English.)"
-    return question + guardLine
+
+    return birthContext + "\n\n" + question + noChinese
 }
 
 // MARK: - Markdown message bubble
@@ -73,7 +91,7 @@ final class ChatViewModel {
         error = nil
 
         do {
-            let question = guardNoChinese(text, language: language)
+            let question = buildChatQuestion(text, language: language, profile: profile)
             let resp = try await api.ask(
                 question: question,
                 birthDate: profile.birthDateString,
