@@ -100,6 +100,7 @@ final class ChatViewModel {
 struct ChatView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(\.theme) private var theme
+    @FocusState private var isFocused: Bool
     @State private var vm = ChatViewModel()
 
     private var lang: String { settings.language }
@@ -137,7 +138,9 @@ struct ChatView: View {
                         }
                     }
                 }
-                .background(theme.background) // ensure chat background is themed
+                .background(theme.background)
+                .contentShape(Rectangle())
+                .onTapGesture { isFocused = false }
 
                 // Composer
                 HStack(spacing: 8) {
@@ -146,6 +149,7 @@ struct ChatView: View {
                         text: $vm.inputText,
                         axis: .vertical
                     )
+                    .focused($isFocused)
                     .lineLimit(1...5)
                     .padding(10)
                     .background(theme.surfaceContainer.opacity(0.6))

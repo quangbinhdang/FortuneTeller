@@ -21,18 +21,9 @@ struct CookieFortuneView: View {
                 VStack(spacing: 40) {
                     Spacer()
 
-                    // Cookie button — pulse animation
+                    // Cookie button
                     Button {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
-                            if isRevealed {
-                                // Reset: fetch new
-                                isRevealed = false
-                                Task { await fetchFortune() }
-                            } else {
-                                isRevealed = true
-                                cookiePhase = 1.0
-                            }
-                        }
+                        cookieTapped()
                     } label: {
                         ZStack {
                             // Glow halo
@@ -46,6 +37,7 @@ struct CookieFortuneView: View {
                                 .fill(theme.gold.gradient)
                                 .frame(width: 140, height: 140)
                                 .shadow(color: theme.gold.opacity(0.3), radius: 30)
+                                .scaleEffect(cookiePhase)
 
                             // Sparkle particles
                             ForEach(0..<8, id: \.self) { i in
@@ -65,6 +57,7 @@ struct CookieFortuneView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .disabled(isLoading)
                     .onAppear {
                         withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
                             cookiePhase = isRevealed ? 1.0 : 1.06
@@ -75,24 +68,32 @@ struct CookieFortuneView: View {
                     }
 
                     // Fortune text
-                    if isRevealed, let f = fortune {
-                        Text(f.fortune)
-                            .font(theme.headlineFont(size: 20))
-                            .foregroundColor(theme.starlight)
-                            .multilineTextAlignment(.center)
-                            .padding(24)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(theme.surfaceContainer.opacity(0.6))
-                                    .background(.ultraThinMaterial)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(theme.gold.opacity(0.15), lineWidth: 0.5)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                            .padding(.horizontal, 24)
-                            .transition(.scale.combined(with: .opacity))
+                    if let f = fortune {
+                        if isRevealed {
+                            Text(f.fortune)
+                                .font(theme.headlineFont(size: 20))
+                                .foregroundColor(theme.starlight)
+                                .multilineTextAlignment(.center)
+                                .padding(24)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(theme.surfaceContainer.opacity(0.6))
+                                        .background(.ultraThinMaterial)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(theme.gold.opacity(0.15), lineWidth: 0.5)
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .padding(.horizontal, 24)
+                                .transition(.scale.combined(with: .opacity))
+                        } else if !isLoading {
+                            // Cookie loaded but not revealed — show hint
+                            Text(lang == "vi" ? "Chạm vào bánh để mở" : "Tap the cookie to reveal")
+                                .font(theme.bodyFont(size: 14))
+                                .foregroundColor(theme.mutedStarlight)
+                                .transition(.opacity)
+                        }
                     }
 
                     if isLoading {
@@ -116,6 +117,34 @@ struct CookieFortuneView: View {
         }
     }
 
+    // MARK: - Tap logic
+
+    private func cookieTapped() {
+        if isRevealed {
+            // Already revealed — reset and fetch a new one
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                isRevealed = false
+            }
+            // Task must be outside withAnimation to work correctly
+            Task { await fetchFortune() }
+        } else if isLoading {
+            // Ignore taps while loading
+            return
+        } else {
+            // Reveal the loaded fortune
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                isRevealed = true
+                cookiePhase = 1.0
+            }
+            // Mark cached as revealed
+            if let f = fortune {
+                saveFortune(f, revealed: true)
+            }
+        }
+    }
+
+    // MARK: - Caching
+
     private func fetchCached() {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
@@ -129,6 +158,8 @@ struct CookieFortuneView: View {
             Task { await fetchFortune() }
         }
     }
+
+    // MARK: - API
 
     private func fetchFortune() async {
         guard let api = FortuneAPI(serverURL: settings.serverURL),
@@ -148,20 +179,34 @@ struct CookieFortuneView: View {
                 fetchedAt: Date(),
                 hasBeenRevealed: false
             )
-            let key = "cookie_\(profile.id)_\(f.date)"
-            if let data = try? JSONEncoder().encode(f) {
-                UserDefaults.standard.set(data, forKey: key)
-            }
+            saveFortune(f, revealed: false)
             fortune = f
+            // Auto-reveal after successful fetch
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                isRevealed = true
+            }
         } catch {
-            fortune = CookieFortune(
+            let fallback = CookieFortune(
                 profileId: profile.id,
                 date: "today",
                 fortune: settings.language == "vi" ? "Hãy tin vào trực giác của bạn hôm nay." : "Trust your intuition today.",
                 fetchedAt: Date(),
                 hasBeenRevealed: false
             )
+            fortune = fallback
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+                isRevealed = true
+            }
         }
         isLoading = false
+    }
+
+    private func saveFortune(_ f: CookieFortune, revealed: Bool) {
+        var updated = f
+        updated.hasBeenRevealed = revealed
+        let key = "cookie_\(f.profileId)_\(f.date)"
+        if let data = try? JSONEncoder().encode(updated) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
     }
 }
