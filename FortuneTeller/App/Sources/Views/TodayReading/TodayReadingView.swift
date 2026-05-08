@@ -50,11 +50,19 @@ struct TodayReadingView: View {
                         }
                         .frame(maxWidth: .infinity, minHeight: 200)
                     } else if let err = error {
-                        ContentUnavailableView(
-                            lang == "vi" ? "Không thể tải tử vi" : "Could not load reading",
-                            systemImage: "moon.zzz",
-                            description: Text(err)
-                        )
+                        VStack(spacing: 20) {
+                            ContentUnavailableView(
+                                lang == "vi" ? "Không thể tải tử vi" : "Could not load reading",
+                                systemImage: "moon.zzz",
+                                description: Text(err)
+                            )
+                            Button(lang == "vi" ? "Thử lại" : "Retry") {
+                                error = nil
+                                Task { await fetchReading() }
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(theme.gold)
+                        }
                     } else if answer.isEmpty {
                         emptyState
                     } else {
@@ -76,6 +84,7 @@ struct TodayReadingView: View {
             .navigationTitle(lang == "vi" ? "Hôm nay" : "Today")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
+                loadCached()
                 if answer.isEmpty, error == nil, settings.activeProfile != nil {
                     Task { await fetchReading() }
                 }
@@ -240,6 +249,16 @@ struct TodayReadingView: View {
         return result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? text : result
     }
 
+    // MARK: - Cache
+
+    private func loadCached() {
+        guard let data = UserDefaults.standard.data(forKey: todayKey),
+              let cached = try? JSONDecoder().decode(FortuneAPI.AskResponse.self, from: data) else { return }
+        answer = cached.answer
+        chart = cached.chart
+        sources = cached.sources
+    }
+
     // MARK: - API fetch
 
     private func fetchReading() async {
@@ -287,27 +306,75 @@ struct TodayReadingView: View {
         if lang == "vi" {
             return """
             Hôm nay là \(todayStr).
+            Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(profile.birthPlace ?? "không rõ").
 
-            Đọc tử vi cho tôi ngày hôm nay, dựa trên lá số của tôi:
-            - Ngày sinh: \(birthStr) lúc \(timeStr)
-            - Nơi sinh: \(profile.birthPlace ?? "không rõ")
+            Đọc tử vi chi tiết cho tôi ngày hôm nay. Trả lời bằng markdown có tiêu đề rõ ràng. Bao gồm TẤT CẢ các mục sau (nếu một truyền thống không có thông tin, hãy thử truyền thống khác):
 
-            Phân tích chi tiết từng khía cạnh: công việc, tình cảm, sức khỏe, tài chính.
+            ### Năng lượng hôm nay
+            Mô tả năng lượng chung của ngày — yếu tố ngũ hành chi phối, cảm giác chung.
 
-            QUAN TRỌNG: KHÔNG sử dụng chữ Hán hoặc ký tự Trung Quốc. Chỉ viết bằng tiếng Việt.
+            ### Màu sắc may mắn
+            Liệt kê ít nhất 3 màu nên mặc hoặc mang theo hôm nay. Giải thích ngắn tại sao.
+
+            ### Giờ tốt để ra ngoài
+            Những khung giờ thuận lợi nhất trong ngày (theo giờ địa phương). Kèm lý do ngắn.
+
+            ### Vật phẩm / Dấu hiệu may mắn
+            Những món đồ, con số, biểu tượng hoặc vật phẩm nên mang theo. Có thể từ nhiều truyền thống.
+
+            ### Công việc & Tài chính
+            Lời khuyên cụ thể cho công việc và tiền bạc hôm nay.
+
+            ### Tình cảm & Quan hệ
+            Năng lượng cho chuyện tình cảm, gia đình, bạn bè.
+
+            ### Sức khoẻ
+            Điều cần chú ý về sức khoẻ thể chất và tinh thần.
+
+            ### Điều nên tránh
+            Những hoạt động, hướng, hoặc quyết định không nên làm hôm nay.
+
+            ### Góc nhìn đa truyền thống
+            Nếu có thể, so sánh ngắn giữa Tử Vi, Bát Tự, Kinh Dịch và chiêm tinh phương Tây. Nơi nào đồng ý, nơi nào khác biệt.
+
+            QUAN TRỌNG: KHÔNG dùng chữ Hán hoặc ký tự Trung Quốc. Chỉ viết bằng tiếng Việt. Trả lời đầy đủ, không bỏ sót mục nào.
             """
         }
 
         return """
         Today is \(todayStr).
+        I was born on \(birthStr) at \(timeStr), birthplace: \(profile.birthPlace ?? "unknown").
 
-        Read my fortune for TODAY ONLY, based on my birth chart:
-        - Born: \(birthStr) at \(timeStr)
-        - Birthplace: \(profile.birthPlace ?? "unknown")
+        Give me a detailed fortune reading for TODAY ONLY. Format your response using markdown headings. Include ALL of the following sections (if one tradition lacks information, try another):
 
-        Cover these areas in detail: career, relationships, health, finances.
+        ### Today's Energy
+        Describe the overall energy of the day — which element dominates, the general feel.
 
-        IMPORTANT: Do NOT include Chinese characters (Hanzi) or any non-English text. Write only in English.
+        ### Lucky Colors
+        List at least 3 colors to wear or carry today. Briefly explain why.
+
+        ### Best Times to Go Out
+        The most favorable time windows today (in local time). Give a short reason for each.
+
+        ### Lucky Items / Signs
+        Items, numbers, symbols, or talismans to carry or look for. Draw from multiple traditions if possible.
+
+        ### Career & Finances
+        Specific guidance for work and money matters today.
+
+        ### Love & Relationships
+        Energy for romance, family, and friendships.
+
+        ### Health
+        Physical and mental well-being notes for today.
+
+        ### Things to Avoid
+        Activities, directions, or decisions to steer clear of.
+
+        ### Cross-Tradition Perspective
+        Briefly compare what Zi Wei, BaZi, Yi Jing, and Western astrology each say about today — where they agree and where they differ.
+
+        IMPORTANT: Do NOT include Chinese characters or Hanzi. Write only in English. Be thorough — do not skip any section.
         """
     }
 }
