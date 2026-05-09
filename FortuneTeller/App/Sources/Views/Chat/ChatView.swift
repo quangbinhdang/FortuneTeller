@@ -77,7 +77,7 @@ final class ChatViewModel {
 
     func send(api: FortuneAPI?, profile: Profile?, language: String) async {
         guard let api, let profile else {
-            error = "Server or profile not configured."
+            error = language == "vi" ? "Chưa cấu hình máy chủ hoặc hồ sơ." : "Server or profile not configured."
             return
         }
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)

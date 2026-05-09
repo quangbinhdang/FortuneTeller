@@ -18,6 +18,10 @@ struct GardenPlant: Identifiable, Codable {
     var stageLabel: String {
         "Stage \(stage)/\(maxStage)"
     }
+
+    var stageLabelVi: String {
+        "Giai đoạn \(stage)/\(maxStage)"
+    }
 }
 
 struct GardenState: Codable {
@@ -45,13 +49,15 @@ struct FortuneGardenView: View {
     @State private var garden: GardenState = .default()
     @State private var showFlourish = false
 
+    private var lang: String { settings.language }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 4) {
-                        Text("Fortune Garden")
+                        Text(lang == "vi" ? "Vườn may mắn" : "Fortune Garden")
                             .font(theme.headlineFont(size: 28))
                             .foregroundColor(theme.gold)
 
@@ -59,7 +65,9 @@ struct FortuneGardenView: View {
                             Image(systemName: "leaf.fill")
                                 .font(.caption)
                                 .foregroundColor(theme.gold.opacity(0.6))
-                            Text("\(garden.plants.filter { $0.stage > 0 }.count) plants growing")
+                            Text(lang == "vi"
+                                ? "\(garden.plants.filter { $0.stage > 0 }.count) cây đang lớn"
+                                : "\(garden.plants.filter { $0.stage > 0 }.count) plants growing")
                                 .font(.caption)
                                 .foregroundColor(theme.subtleWhite)
                         }
@@ -77,7 +85,9 @@ struct FortuneGardenView: View {
                     }
 
                     // Tip
-                    Text("Return daily to water your garden")
+                    Text(lang == "vi"
+                        ? "Quay lại mỗi ngày để tưới vườn"
+                        : "Return daily to water your garden")
                         .font(.caption)
                         .foregroundColor(theme.subtleWhite.opacity(0.5))
                         .padding(.top, 4)
@@ -86,7 +96,7 @@ struct FortuneGardenView: View {
                 .padding(.bottom, 32)
             }
             .background(theme.background)
-            .navigationTitle("Garden")
+            .navigationTitle(lang == "vi" ? "Vườn" : "Garden")
             .navigationBarHidden(true)
             .onAppear { loadGarden() }
         }
@@ -189,7 +199,7 @@ struct FortuneGardenView: View {
                     .font(.body.weight(.medium))
                     .foregroundColor(theme.starlight)
 
-                Text(plant.wrappedValue.stageLabel)
+                Text(lang == "vi" ? plant.wrappedValue.stageLabelVi : plant.wrappedValue.stageLabel)
                     .font(.caption)
                     .foregroundColor(theme.subtleWhite)
             }

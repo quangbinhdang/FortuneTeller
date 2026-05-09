@@ -17,6 +17,8 @@ struct ShadowReadingView: View {
 
     private let candleColor = Color(red: 0.72, green: 0.58, blue: 0.29) // #B8944A amber-gold
 
+    private var lang: String { settings.language }
+
     enum Phase {
         case preparation, revealed
     }
@@ -36,11 +38,11 @@ struct ShadowReadingView: View {
                         VStack(spacing: 32) {
                             // Header
                             VStack(spacing: 4) {
-                                Text("Shadow Reading")
+                                Text(lang == "vi" ? "Đọc bóng tối" : "Shadow Reading")
                                     .font(.system(size: 28, weight: .medium, design: .serif))
                                     .foregroundColor(candleColor)
 
-                                Text("What the shadows reveal")
+                                Text(lang == "vi" ? "Điều bóng tối tiết lộ" : "What the shadows reveal")
                                     .font(.caption)
                                     .foregroundColor(.white.opacity(0.35))
                             }
@@ -58,7 +60,7 @@ struct ShadowReadingView: View {
                     }
                 }
             }
-            .navigationTitle("Shadow")
+            .navigationTitle(lang == "vi" ? "Bóng tối" : "Shadow")
             .navigationBarHidden(true)
             .onAppear {
                 startCandleAnimation()
@@ -120,19 +122,21 @@ struct ShadowReadingView: View {
                     .scaleEffect(breathScale)
 
                 VStack(spacing: 8) {
-                    Text("Take a deep breath")
+                    Text(lang == "vi" ? "Hít thở sâu" : "Take a deep breath")
                         .font(.body)
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
 
-                    Text("Inhale...")
+                    Text(lang == "vi" ? "Hít vào..." : "Inhale...")
                         .font(.caption)
                         .foregroundColor(candleColor.opacity(0.6))
                 }
             }
 
             // Description
-            Text("The shadows hold what you've been avoiding. This ritual reveals patterns that need your awareness.")
+            Text(lang == "vi"
+                ? "Bóng tối nắm giữ những điều bạn đang tránh né. Nghi thức này tiết lộ những mẫu hình cần sự chú ý của bạn."
+                : "The shadows hold what you've been avoiding. This ritual reveals patterns that need your awareness.")
                 .font(.callout)
                 .foregroundColor(.white.opacity(0.4))
                 .multilineTextAlignment(.center)
@@ -149,7 +153,9 @@ struct ShadowReadingView: View {
                         ProgressView()
                             .tint(candleColor)
                     }
-                    Text(isLoading ? "Consulting..." : "Begin Reading")
+                    Text(isLoading
+                        ? (lang == "vi" ? "Đang xem..." : "Consulting...")
+                        : (lang == "vi" ? "Bắt đầu đọc" : "Begin Reading"))
                         .font(.callout)
                 }
                 .foregroundColor(candleColor)
@@ -208,7 +214,7 @@ struct ShadowReadingView: View {
             // Theme icons
             if !themes.isEmpty {
                 VStack(spacing: 12) {
-                    Text("Themes noticed")
+                    Text(lang == "vi" ? "Chủ đề nhận thấy" : "Themes noticed")
                         .font(.caption)
                         .foregroundColor(candleColor.opacity(0.5))
 
@@ -238,7 +244,7 @@ struct ShadowReadingView: View {
                     startBreathingAnimation()
                 }
             } label: {
-                Text("Try another reading")
+                Text(lang == "vi" ? "Thử lại" : "Try another reading")
                     .font(.caption)
                     .foregroundColor(candleColor.opacity(0.5))
             }
@@ -261,7 +267,7 @@ struct ShadowReadingView: View {
     private func performReading() async {
         guard let api = FortuneAPI(serverURL: settings.serverURL),
               let profile = settings.activeProfile else {
-            error = "No active profile set."
+            error = lang == "vi" ? "Chưa chọn hồ sơ." : "No active profile set."
             return
         }
 
