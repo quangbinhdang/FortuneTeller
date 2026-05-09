@@ -169,7 +169,13 @@ struct CookieFortuneView: View {
             let prompt = settings.language == "vi"
                 ? "Tên tôi là \(profile.name), sinh ngày \(profile.birthDateString) lúc \(String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)) tại \(profile.birthPlace ?? "không rõ"), giới tính \(profile.gender ?? "không rõ"). Cho tôi một lời khuyên ngắn một câu hôm nay. KHÔNG dùng chữ Hán. Chỉ viết bằng tiếng Việt."
                 : "My name is \(profile.name), born \(profile.birthDateString) at \(String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)) in \(profile.birthPlace ?? "unknown"), gender \(profile.gender ?? "unknown"). Give me one sentence of encouragement or awareness for today. Do NOT include Chinese characters. Write only in English."
-            let resp = try await api.ask(question: prompt, birthDate: profile.birthDateString, birthHour: profile.birthHour, birthMinute: profile.birthMinute)
+            let resp = try await api.ask(
+                question: prompt,
+                birthDate: profile.birthDateString,
+                birthHour: profile.birthHour,
+                birthMinute: profile.birthMinute,
+                birthPlace: profile.birthPlace
+            )
             let firstSentence = resp.answer.components(separatedBy: ".").first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? resp.answer
             let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
             let f = CookieFortune(

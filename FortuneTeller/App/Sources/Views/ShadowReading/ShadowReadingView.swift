@@ -277,7 +277,8 @@ struct ShadowReadingView: View {
                 question: prompt,
                 birthDate: profile.birthDateString,
                 birthHour: profile.birthHour,
-                birthMinute: profile.birthMinute
+                birthMinute: profile.birthMinute,
+                birthPlace: profile.birthPlace
             )
 
             reading = resp.answer

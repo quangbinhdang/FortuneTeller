@@ -268,7 +268,8 @@ struct LifeReadingView: View {
                 question: lifePrompt(profile: profile),
                 birthDate: profile.birthDateString,
                 birthHour: profile.birthHour,
-                birthMinute: profile.birthMinute
+                birthMinute: profile.birthMinute,
+                birthPlace: profile.birthPlace
             )
             answer = resp.answer
             chart = resp.chart

@@ -96,7 +96,8 @@ final class ChatViewModel {
                 question: question,
                 birthDate: profile.birthDateString,
                 birthHour: profile.birthHour,
-                birthMinute: profile.birthMinute
+                birthMinute: profile.birthMinute,
+                birthPlace: profile.birthPlace
             )
             let assistantMsg = ChatMessage(
                 id: UUID().uuidString,

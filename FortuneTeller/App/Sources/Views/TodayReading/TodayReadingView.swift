@@ -302,7 +302,8 @@ struct TodayReadingView: View {
                 question: languagePrompt(profile: profile),
                 birthDate: profile.birthDateString,
                 birthHour: profile.birthHour,
-                birthMinute: profile.birthMinute
+                birthMinute: profile.birthMinute,
+                birthPlace: profile.birthPlace
             )
             answer = resp.answer
             chart = resp.chart
@@ -331,26 +332,33 @@ struct TodayReadingView: View {
             )) ?? Date())
         }()
         let timeStr = String(format: "%02d:%02d", profile.birthHour, profile.birthMinute)
+        let ageNow = Calendar.current.component(.year, from: Date()) - profile.birthYear
 
         if lang == "vi" {
             return """
+            [THÔNG TIN CÁ NHÂN — PHẢI DÙNG ĐỂ CÁ NHÂN HOÁ BÀI ĐỌC]
             Tên: \(profile.name)
-            Hôm nay là \(todayStr).
-            Tôi sinh ngày \(birthStr) lúc \(timeStr), nơi sinh: \(profile.birthPlace ?? "không rõ"), giới tính: \(profile.gender ?? "không rõ").
+            Ngày sinh: \(birthStr)
+            Giờ sinh: \(timeStr)
+            Nơi sinh: \(profile.birthPlace ?? "không rõ")
+            Giới tính: \(profile.gender ?? "không rõ")
+            Tuổi hiện tại: \(ageNow)
 
-            Đọc tử vi chi tiết cho tôi ngày hôm nay. Trả lời bằng markdown có tiêu đề rõ ràng. Bao gồm TẤT CẢ các mục sau (nếu một truyền thống không có thông tin, hãy thử truyền thống khác):
+            Hôm nay là \(todayStr). Đọc tử vi cho tôi ngày hôm nay — hãy cá nhân hoá câu trả lời dựa trên thông tin của tôi ở trên.
+
+            Trả lời bằng markdown có tiêu đề rõ ràng. Bao gồm TẤT CẢ các mục sau:
 
             ### Năng lượng hôm nay
-            Mô tả năng lượng chung của ngày — yếu tố ngũ hành chi phối, cảm giác chung.
+            Mô tả năng lượng chung — yếu tố ngũ hành chi phối, cảm giác chung. Liên hệ đến lá số của tôi.
 
             ### Màu sắc may mắn
-            Liệt kê ít nhất 3 màu nên mặc hoặc mang theo hôm nay. Giải thích ngắn tại sao.
+            Ít nhất 3 màu nên mặc hoặc mang theo hôm nay. Giải thích ngắn tại sao.
 
             ### Giờ tốt để ra ngoài
-            Những khung giờ thuận lợi nhất trong ngày (theo giờ địa phương). Kèm lý do ngắn.
+            Những khung giờ thuận lợi nhất trong ngày. Kèm lý do ngắn.
 
             ### Vật phẩm / Dấu hiệu may mắn
-            Những món đồ, con số, biểu tượng hoặc vật phẩm nên mang theo. Có thể từ nhiều truyền thống.
+            Món đồ, con số, biểu tượng nên mang theo. Có thể từ nhiều truyền thống.
 
             ### Công việc & Tài chính
             Lời khuyên cụ thể cho công việc và tiền bạc hôm nay.
@@ -362,33 +370,39 @@ struct TodayReadingView: View {
             Điều cần chú ý về sức khoẻ thể chất và tinh thần.
 
             ### Điều nên tránh
-            Những hoạt động, hướng, hoặc quyết định không nên làm hôm nay.
+            Hoạt động, hướng, hoặc quyết định không nên làm hôm nay.
 
             ### Góc nhìn đa truyền thống
-            Nếu có thể, so sánh ngắn giữa Tử Vi, Bát Tự, Kinh Dịch và chiêm tinh phương Tây. Nơi nào đồng ý, nơi nào khác biệt.
+            So sánh ngắn giữa Tử Vi, Bát Tự, Kinh Dịch và chiêm tinh phương Tây.
 
-            QUAN TRỌNG: KHÔNG dùng chữ Hán hoặc ký tự Trung Quốc. Chỉ viết bằng tiếng Việt. Trả lời đầy đủ, không bỏ sót mục nào.
+            QUAN TRỌNG: KHÔNG dùng chữ Hán. Bài đọc PHẢI nhắc đến tên tôi (\(profile.name)) và cá nhân hoá dựa trên ngày sinh, nơi sinh của tôi. Chỉ viết tiếng Việt.
             """
         }
 
         return """
+        [PERSONAL PROFILE — YOU MUST PERSONALIZE THE READING WITH THIS DATA]
         Name: \(profile.name)
-        Today is \(todayStr).
-        I was born on \(birthStr) at \(timeStr), birthplace: \(profile.birthPlace ?? "unknown"), gender: \(profile.gender ?? "unknown").
+        Birth date: \(birthStr)
+        Birth time: \(timeStr)
+        Birthplace: \(profile.birthPlace ?? "unknown")
+        Gender: \(profile.gender ?? "unknown")
+        Current age: \(ageNow)
 
-        Give me a detailed fortune reading for TODAY ONLY. Format your response using markdown headings. Include ALL of the following sections (if one tradition lacks information, try another):
+        Today is \(todayStr). Read my fortune for TODAY ONLY — personalize your response using my profile above.
+
+        Format using markdown headings. Include ALL of the following sections:
 
         ### Today's Energy
-        Describe the overall energy of the day — which element dominates, the general feel.
+        Describe the overall energy — which element dominates, the general feel. Relate it to my chart.
 
         ### Lucky Colors
-        List at least 3 colors to wear or carry today. Briefly explain why.
+        At least 3 colors to wear or carry today. Briefly explain why.
 
         ### Best Times to Go Out
-        The most favorable time windows today (in local time). Give a short reason for each.
+        The most favorable time windows today. Give a short reason.
 
         ### Lucky Items / Signs
-        Items, numbers, symbols, or talismans to carry or look for. Draw from multiple traditions if possible.
+        Items, numbers, symbols to carry or look for. Draw from multiple traditions.
 
         ### Career & Finances
         Specific guidance for work and money matters today.
@@ -403,9 +417,9 @@ struct TodayReadingView: View {
         Activities, directions, or decisions to steer clear of.
 
         ### Cross-Tradition Perspective
-        Briefly compare what Zi Wei, BaZi, Yi Jing, and Western astrology each say about today — where they agree and where they differ.
+        Compare Zi Wei, BaZi, Yi Jing, and Western astrology — where they agree and differ.
 
-        IMPORTANT: Do NOT include Chinese characters or Hanzi. Write only in English. Be thorough — do not skip any section.
+        IMPORTANT: Do NOT include Chinese characters. The reading MUST reference my name (\(profile.name)) and personalize based on my birth details and birthplace. Write only in English.
         """
-    }
+}
 }

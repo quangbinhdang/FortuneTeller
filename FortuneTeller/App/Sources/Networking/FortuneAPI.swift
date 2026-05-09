@@ -71,7 +71,8 @@ struct FortuneAPI {
         question: String,
         birthDate: String?,
         birthHour: Int? = 12,
-        birthMinute: Int? = 0
+        birthMinute: Int? = 0,
+        birthPlace: String? = nil
     ) async throws -> AskResponse {
         var req = URLRequest(url: baseURL.appendingPathComponent("ask"))
         req.httpMethod = "POST"
@@ -82,6 +83,7 @@ struct FortuneAPI {
         if let bd = birthDate { body["birth_date"] = bd }
         if let bh = birthHour { body["birth_hour"] = bh }
         if let bm = birthMinute { body["birth_minute"] = bm }
+        if let bp = birthPlace { body["birth_place"] = bp }
 
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
 
